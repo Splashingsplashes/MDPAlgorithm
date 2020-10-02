@@ -4,6 +4,7 @@ import java.util.*;
 import robot.Robot;
 import robot.RobotConstants;
 import sun.java2d.Surface;
+import sun.lwawt.macosx.CSystemTray;
 
 import java.lang.*;
 import javax.swing.*;
@@ -30,7 +31,7 @@ public class Map extends JPanel {
     private static RobotConstants.DIRECTION prev_d = NORTH;
     private static List<ObsSurface> surfaceCoverage = new ArrayList<ObsSurface>();
     public static HashMap<String, ObsSurface> surfaceTaken = new HashMap<String, ObsSurface>();
-    private static List<ObsSurface> allPossibleSurfaces = new ArrayList<ObsSurface>();
+    private static List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
 
     /**
      * Initialises a Map object with a grid of Cell objects.
@@ -51,118 +52,9 @@ public class Map extends JPanel {
         }
     }
 
-    public List<ObsSurface> getSurfaceCoverage(){
-        return surfaceCoverage;
-    }
-
-    public void setAllPossibleSurfaceCoverage(List<ObsSurface> surfaces){
-        allPossibleSurfaces = surfaces;
-    }
-    public ObsSurface nearestObsSurface(Point loc, HashMap<String, ObsSurface> notYetTaken) {
-        double dist = 1000, tempDist;
-        Point tempPos;
-        ObsSurface nearest = null;
-
-        for (ObsSurface obstacle: notYetTaken.values()) {
-//            tempPos = obstacle.getPos();
-            // neighbour cell of that surface
-            tempPos = getNeighbour(obstacle.getPos(), obstacle.getSurface());
-            tempDist = loc.distance(tempPos);
-            if (tempDist < dist) {
-                dist = tempDist;
-                nearest = obstacle;
-            }
-        }
-        return nearest;
-    }
-    public Cell nearestMovable(ObsSurface obsSurface) {
-        double distance = 1000, tempDist;
-        Cell nearest = null;
-        Cell tempCell;
-        int rowInc = 0, colInc = 0;
-        int obsRow = obsSurface.getRow();
-        int obsCol = obsSurface.getCol();
-        switch (obsSurface.getSurface()) {
-            case UP:
-                rowInc = 1;
-                colInc = 0;
-                break;
-            case DOWN:
-                rowInc = -1;
-                colInc = 0;
-                break;
-            case LEFT:
-                colInc = -1;
-                rowInc = 0;
-                break;
-            case RIGHT:
-                colInc = 1;
-                rowInc = 0;
-                break;
-        }
-
-        // up or down
-        if (rowInc != 0) {
-            for (int row = obsRow + 2 * rowInc; row <= obsRow + 3 * rowInc; row++) {
-                for (int col = obsCol - 1; col <= obsCol + 1; col++) {
-                    if (checkValidMove(row, col)) {
-                        tempCell = grid[row][col];
-                        tempDist = obsSurface.getPos().distance(tempCell.getPos());
-                        if (distance > tempDist) {
-                            nearest = tempCell;
-                            distance = tempDist;
-                        }
-                    }
-                }
-            }
-        }
-
-        else if (colInc != 0) {
-            for (int col = obsCol + 2 * colInc; col <= obsCol + 3 * colInc; col++) {
-                for (int row = obsRow - 1; row <= obsRow + 1; row++) {
-                    if (checkValidMove(row, col)) {
-                        tempCell = grid[row][col];
-                        tempDist = obsSurface.getPos().distance(tempCell.getPos());
-                        if (distance > tempDist) {
-                            nearest = tempCell;
-                            distance = tempDist;
-                        }
-                    }
-                }
-            }
-        }
-        return nearest;
-    }
-
-
-    public boolean checkValidMove(int row, int col) {
-//        System.out.println("DEBUG: " + getCell(row, col).isVirtualWall());
-            return checkValidCell(row, col) && !getCell(row, col).getIsVirtualWall() && !getCell(row, col).getIsObstacle() && getCell(row,col).getIsExplored();
-        }
-
-    public Point getNeighbour(Point pos, Direction surfDir) {
-
-        Point n = null;
-
-        switch (surfDir) {
-            case UP:
-                n = new Point(pos.x , pos.y + 1);
-                break;
-            case DOWN:
-                n = new Point(pos.x, pos.y - 1);
-                break;
-            case LEFT:
-                n = new Point(pos.x - 1, pos.y);
-                break;
-            case RIGHT:
-                n = new Point(pos.x + 1, pos.y);
-                break;
-        }
-        return n;
-    }
-
     public boolean checkValidCell(int row, int col) {
-        return row >= 0 && col >= 0 && row < MapConstants.MAP_ROWS && col < MapConstants.MAP_COLS;
+        boolean res = row >= 0 && col >= 0 && row < MapConstants.MAP_ROWS && col < MapConstants.MAP_COLS;
+        return res;
     }
     public Cell getCell(Point pos) {
         return grid[pos.y][pos.x];
@@ -624,7 +516,9 @@ public class Map extends JPanel {
                     else if (grid[mapRow][mapCol].getIsObstacle()) {
                         cellColor = GraphicsConstants.C_OBSTACLE;
                     }
-
+                    else if (grid[mapRow][mapCol].getIsVirtualWall()) {
+                        cellColor = Color.orange;
+                    }
                     else
                         cellColor = GraphicsConstants.C_FREE;
                 }
@@ -703,12 +597,13 @@ public class Map extends JPanel {
             g.fillOval(pos.get(0),pos.get(1),6,6);
         }
 //
-        paintSurface(surfaceCoverage,g);
-        if(allPossibleSurfaces.size()!=0){
-            paintSurface(allPossibleSurfaces,g);
-            System.out.println("painted surfaces");
-            System.out.println(allPossibleSurfaces);
+//        paintSurface(surfaceCoverage,g);
+        if(notYetTakenList!=null && notYetTakenList.size()!=0){
+            paintSurface(notYetTakenList,g);
         }
+//            System.out.println("painted surfaces");
+//            System.out.println(notYetTakenList);
+
 
         }
         public void paintSurface(List<ObsSurface>coverage,Graphics g){
@@ -780,7 +675,157 @@ public class Map extends JPanel {
         surfaceCoverage.clear();
         imagePos.clear();
         cameraPos.clear();
-        allPossibleSurfaces.clear();
+        notYetTakenList.clear();
         surfaceTaken.clear();
     }
+
+    public List<ObsSurface> getSurfaceCoverage(){
+        return surfaceCoverage;
+    }
+
+    public void setNotYetTakenList(List<ObsSurface> surfaces){
+        notYetTakenList = surfaces;
+    }
+    public ObsSurface nearestObsSurface(Point loc, HashMap<String, ObsSurface> notYetTaken) {
+        double dist = 1000, tempDist;
+        Point tempPos;
+        ObsSurface nearest = null;
+
+        for (ObsSurface obstacle: notYetTaken.values()) {
+//            tempPos = obstacle.getPos();
+            // neighbour cell of that surface
+            tempPos = getNeighbour(obstacle.getPos(), obstacle.getSurface());
+            tempDist = loc.distance(tempPos);
+            if (tempDist < dist) {
+                dist = tempDist;
+                nearest = obstacle;
+            }
+        }
+        return nearest;
+    }
+    public Cell nearestMovable(ObsSurface obsSurface) {
+        double distance = 1000, tempDist;
+        Cell nearest = null;
+        Cell tempCell;
+        int rowInc = 0, colInc = 0;
+        int obsRow = obsSurface.getRow();
+        int obsCol = obsSurface.getCol();
+        switch (obsSurface.getSurface()) {
+            case UP: {
+                rowInc = 1;
+                colInc = 0;
+                break;
+            }
+            case DOWN:{
+                rowInc = -1;
+                colInc = 0;
+                break;}
+            case LEFT:{
+                colInc = -1;
+                rowInc = 0;
+                break;
+            }
+            case RIGHT:{
+                colInc = 1;
+                rowInc = 0;
+                break;
+            }
+        }
+
+        // up or down
+        if (rowInc == -1) {
+            for (int row = obsRow + 5 * rowInc; row <= obsRow + 1 * rowInc; row++) {
+                for (int col = obsCol - 1; col <= obsCol + 1; col++) {
+                    if (checkValidMove(row, col)) {
+                        tempCell = grid[row][col];
+                        tempDist = obsSurface.getPos().distance(tempCell.getPos());
+                        if (distance > tempDist) {
+                            nearest = tempCell;
+                            distance = tempDist;
+                        }
+                    }
+                }
+            }
+        }
+        if (rowInc == 1) {
+            for (int row = obsRow + 1 * rowInc; row <= obsRow + 5 * rowInc; row++) {
+                for (int col = obsCol - 1; col <= obsCol + 1; col++) {
+                    if (checkValidMove(row, col)) {
+                        tempCell = grid[row][col];
+                        tempDist = obsSurface.getPos().distance(tempCell.getPos());
+                        if (distance > tempDist) {
+                            nearest = tempCell;
+                            distance = tempDist;
+                        }
+                    }
+                }
+            }
+        }
+        else if (colInc == -1) {
+            for (int col = obsCol + 5 * colInc; col <= obsCol + 1* colInc; col++) {
+                for (int row = obsRow - 1; row <= obsRow + 1; row++) {
+                    if (checkValidMove(row, col)) {
+                        tempCell = grid[row][col];
+                        tempDist = obsSurface.getPos().distance(tempCell.getPos());
+                        if (distance > tempDist) {
+                            nearest = tempCell;
+                            distance = tempDist;
+                        }
+                    }
+                }
+            }
+        }
+        else if (colInc == 1) {
+            for (int col = obsCol + 1 * colInc; col <= obsCol + 5 * colInc; col++) {
+                for (int row = obsRow - 1; row <= obsRow + 1; row++) {
+                    if (checkValidMove(row, col)) {
+                        tempCell = grid[row][col];
+                        tempDist = obsSurface.getPos().distance(tempCell.getPos());
+                        if (distance > tempDist) {
+                            nearest = tempCell;
+                            distance = tempDist;
+                        }
+                    }
+                }
+            }
+        }
+
+        return nearest;
+    }
+
+
+    public boolean checkValidMove(int row, int col) {
+//        System.out.println("check valid cell");
+//        if(checkValidCell(row, col)){
+//            System.out.println(getCell(row, col).getPos());
+//            System.out.println(getCell(row, col).getIsVirtualWall());
+//            System.out.println(getCell(row, col).getIsObstacle());
+//            System.out.println(getCell(row, col).getIsExplored());
+//        }
+        boolean res = checkValidCell(row, col) && !getCell(row, col).getIsVirtualWall() && !getCell(row, col).getIsObstacle() && getCell(row,col).getIsExplored();
+//        System.out.println("res is"+res);
+        return res;
+    }
+
+    public Point getNeighbour(Point pos, Direction surfDir) {
+
+        Point n = null;
+
+        switch (surfDir) {
+            case UP:
+                n = new Point(pos.x , pos.y + 1);
+                break;
+            case DOWN:
+                n = new Point(pos.x, pos.y - 1);
+                break;
+            case LEFT:
+                n = new Point(pos.x - 1, pos.y);
+                break;
+            case RIGHT:
+                n = new Point(pos.x + 1, pos.y);
+                break;
+        }
+        return n;
+    }
+
 }

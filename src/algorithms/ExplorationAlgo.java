@@ -33,6 +33,7 @@ public class ExplorationAlgo {
     private ArrayList<Cell> unExploredCells;
     private boolean imageRun = true;
     HashMap<String, ObsSurface> notYetTaken;
+    List<ObsSurface> notAccessibleSurface;
 
     public ExplorationAlgo(Map exploredMap, Map realMap, Robot bot, int coverageLimit, int timeLimit) {
         this.exploredMap = exploredMap;
@@ -150,27 +151,53 @@ public class ExplorationAlgo {
         System.out.println("AreaExplored: " + areaExplored);
         System.out.println("coverageLimit: " + coverageLimit);
 
-//        if (imageRun) {
-//            HashMap<String, ObsSurface> coverage = this.getAllObsSurfaces();
-//            List<ObsSurface> allPossibleSurfaceCoverage = new ArrayList<ObsSurface>();
-//            for (String key : coverage.keySet()) {
-//                allPossibleSurfaceCoverage.add(coverage.get(key));
-//            }
-//
-//            notYetTaken = getUntakenSurfaces();
-//            if (notYetTaken.size() == 0) {
-//                return;
-//            }
-//            List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
-//            for (String key : notYetTaken.keySet()) {
-//                notYetTakenList.add(notYetTaken.get(key));
-//            }
-//            exploredMap.setAllPossibleSurfaceCoverage(notYetTakenList);
-//            System.out.println("check");
-//            System.out.println(notYetTakenList);
-//        }
-
         goHome2();
+
+        if (imageRun) {
+            System.out.println("image run");
+            HashMap<String, ObsSurface> coverage = this.getAllObsSurfaces();
+            List<ObsSurface> allPossibleSurfaceCoverage = new ArrayList<ObsSurface>();
+            for (String key : coverage.keySet()) {
+                allPossibleSurfaceCoverage.add(coverage.get(key));
+            }
+
+            notYetTaken = getUntakenSurfaces();
+            if (notYetTaken.size() == 0) {
+                return;
+            }
+            List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
+            for (String key : notYetTaken.keySet()) {
+                notYetTakenList.add(notYetTaken.get(key));
+            }
+            exploredMap.setNotYetTakenList(notYetTakenList);
+            System.out.println("check");
+            System.out.println(notYetTakenList);
+            exploredMap.repaint();
+
+//            ObsSurface nearestObstacle;
+//            Cell nearestCell;
+//            nearestObstacle = exploredMap.nearestObsSurface(bot.getPos(), notYetTaken);
+//            nearestCell = exploredMap.nearestMovable(nearestObstacle);
+//            System.out.println(nearestObstacle);
+//            System.out.println(nearestCell.getPos());
+//            exploredMap.repaint();
+
+            while (notYetTaken.size() > 0) {
+                System.out.println("image loop");
+                imageLoop();
+                exploredMap.repaint();
+                // TODO
+            }
+            System.out.println("Finished, now printing unaccessible ones");
+            exploredMap.setNotYetTakenList(notAccessibleSurface);
+            exploredMap.repaint();
+
+            FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot);
+            returnToStart.runFastestPath(RobotConstants.START_ROW, RobotConstants.START_COL);
+
+            exploredMap.repaint();
+        }
+
 
         }
 
@@ -288,6 +315,8 @@ public class ExplorationAlgo {
     private void goToNearest(Cell nearestCell, ArrayList<Cell> path, boolean candidate) {
         for (int i = 0; i < path.size(); i++) {
             Cell nextCell = path.get(path.size() - i - 1);
+            System.out.println(nextCell.getPos());
+            System.out.println(bot.getPos());
             while ((bot.getRobotPosRow() != nextCell.getRow()) || (bot.getRobotPosCol() != nextCell.getCol())) {
                 System.out.println(nextCell.getRow() + " " + nextCell.getCol());
 
@@ -308,6 +337,7 @@ public class ExplorationAlgo {
             }
 
         }
+        System.out.println("finished");
     }
 
     /**
@@ -766,4 +796,196 @@ public class ExplorationAlgo {
         return notYetTaken;
     }
 
+    private void imageLoop(){
+        ObsSurface nearestObstacle;
+        Cell nearestCell;
+        nearestObstacle = exploredMap.nearestObsSurface(bot.getPos(), notYetTaken);
+        System.out.println("Nearest Surface");
+        System.out.println(nearestObstacle);
+        nearestCell = exploredMap.nearestMovable(nearestObstacle);
+        System.out.println("Nearest Valid Cell");
+        if(nearestCell==null) System.out.println("No valid cell");
+        else System.out.println(nearestCell.getPos());
+
+        if (nearestCell != null) {
+            // go to nearest cell
+            ArrayList<Cell> path = findPath_image(nearestCell);
+            System.out.println(path);
+            Cell nearestCell_modified = new Cell(nearestCell.getRow()+1,nearestCell.getCol()+1);
+            goToNearestSurface(nearestCell_modified, path, nearestObstacle);
+            System.out.println("Bot Pos after goToNearestSurface");
+            System.out.println(bot.getPos());
+            DIRECTION curDir = bot.getRobotCurDir();
+            DIRECTION dirForImage = getDirForTakingImage(nearestObstacle);
+            while(curDir!=dirForImage){
+                MOVEMENT mov = getTargetMove(curDir,dirForImage);
+                System.out.println("imageloop loop for direction");
+                System.out.println(mov);
+                bot.move(mov);
+                curDir = bot.getRobotCurDir();
+            }
+            //todo, send command to take image
+            //updateNotYetTaken(nearestObstacle);
+
+        }
+        else{
+            System.out.println("Unaccessible surface:");
+            System.out.println(nearestObstacle.getPos());
+        }
+
+        System.out.println("size of not taken:");
+        System.out.println(notYetTaken.size());
+        removeFromNotYetTaken(nearestObstacle);
+        System.out.println(notYetTaken.size());
+        System.out.println("Surface removed:");
+        System.out.println(nearestObstacle.toString());
+    }
+
+    private void removeFromNotYetTaken(ObsSurface obsSurface) {
+        notYetTaken.remove(obsSurface.toString());
+
+    }
+
+    private void updateNotYetTaken(ArrayList<ObsSurface> surfTaken) {
+        for (ObsSurface obsSurface : surfTaken) {
+            if (notYetTaken.containsKey(obsSurface.toString())) {
+                notYetTaken.remove(obsSurface.toString());
+            }
+        }
+    }
+    /**
+     * Get direction for taking image.
+     */
+    public DIRECTION getDirForTakingImage(ObsSurface obs){
+        switch (obs.getSurface()) {
+            case UP:{
+                return DIRECTION.WEST;
+            }
+            case DOWN: {
+                return DIRECTION.EAST;
+            }
+            case LEFT:{
+                return DIRECTION.SOUTH;
+            }
+            case RIGHT: {
+                return DIRECTION.NORTH;
+            }
+        }
+        return DIRECTION.WEST;
+    }
+    /**
+     * If full coverage not reached after one round of hugging
+     */
+    private void goToNearestSurface(Cell nearestCell, ArrayList<Cell> path, ObsSurface surface) {
+        for (int i = 0; i < path.size(); i++) {
+            Cell nextCell = path.get(path.size() - i - 1);
+            System.out.println(nextCell.getPos());
+            System.out.println(bot.getPos());
+            while ((bot.getRobotPosRow() != nextCell.getRow()) || (bot.getRobotPosCol() != nextCell.getCol())) {
+                System.out.println(nextCell.getRow() + " " + nextCell.getCol());
+                DIRECTION targetDir = getTargetDir(bot.getRobotPosRow(), bot.getRobotPosCol(), bot.getRobotCurDir(), nextCell);
+
+                System.out.println(targetDir);
+                if (bot.getRobotCurDir() != targetDir) {
+                    MOVEMENT m = getTargetMove(bot.getRobotCurDir(), targetDir);
+                    System.out.println(m);
+                    moveBot(m);
+                }
+                else {
+                    System.out.println("gotonearestsurface loop");
+                    moveBot(MOVEMENT.FORWARD);
+                }
+            }
+            notYetTaken = getUntakenSurfaces();
+            if (notYetTaken.size() == 0) {
+                return;
+            }
+            List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
+            for (String key : notYetTaken.keySet()) {
+                notYetTakenList.add(notYetTaken.get(key));
+            }
+            exploredMap.setNotYetTakenList(notYetTakenList);
+//            System.out.println("check not yet taken likst");
+//            System.out.println(notYetTakenList);
+            exploredMap.repaint();
+//            if (!candidate && exploredMap.getCell(nearestCell.getRow(), nearestCell.getCol()).getIsExplored()) {
+//                break;
+//            }
+
+        }
+        System.out.println("finished one surface");
+    }
+
+
+
+    /**
+     *  Return the shortest path from current path to cell c
+     */
+    private ArrayList<Cell> findPath_image(Cell c) {
+        int[] rowmov = {1, 0, -1, 0};
+        int[] colmov = {0, 1, 0, -1};
+        int[][] dist = new int[MapConstants.MAP_ROWS][MapConstants.MAP_COLS];
+        for (int i = 0; i < MapConstants.MAP_ROWS; i++) {
+            for (int j = 0; j < MapConstants.MAP_COLS; j++) {
+                dist[i][j] = -1;
+            }
+        }
+        ArrayDeque<Cell> nextExplore = new ArrayDeque<>();
+        nextExplore.add(exploredMap.getCell(bot.getRobotPosRow(), bot.getRobotPosCol()));
+        dist[bot.getRobotPosRow()][bot.getRobotPosCol()] = 0;
+        while (!nextExplore.isEmpty()) {
+            Cell current = nextExplore.removeFirst();
+            if (current.getCol() == c.getCol() && current.getRow() == c.getRow()) {
+                break;
+            }
+            for (int i = 0; i < 4; i++){
+                int nextrow = current.getRow() + rowmov[i];
+                int nextcol = current.getCol() + colmov[i];
+                if (nextcol >= 0 && nextrow >= 0 && nextcol < MapConstants.MAP_COLS && nextrow < MapConstants.MAP_ROWS) {
+                    if (dist[nextrow][nextcol] == -1) {
+                        Cell nextCell = exploredMap.getCell(nextrow, nextcol);
+                        if ((nextCell.getIsVirtualWall() || nextCell.getIsObstacle())) {
+                            dist[nextrow][nextcol] = 10000;
+                        }
+                        else {
+                            dist[nextrow][nextcol] = dist[current.getRow()][current.getCol()] + 1;
+                            nextExplore.addLast(nextCell);
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println(dist[c.getRow()][c.getCol()]);
+        if (dist[c.getRow()][c.getCol()] == -1){
+            return null;
+        }
+        ArrayList<Cell> path = new ArrayList<>();
+        Cell current = c;
+        path.add(c);
+
+        System.out.println("enter while");
+        while(!(current.getRow() == bot.getRobotPosRow() & current.getCol() == bot.getRobotPosCol())) {
+
+            for (int i = 0; i < 4; i++) {
+                int nextrow = current.getRow() + rowmov[i];
+                int nextcol = current.getCol() + colmov[i];
+                if (nextcol >= 0 && nextrow >= 0 && nextcol <= MapConstants.MAP_COLS && nextrow <= MapConstants.MAP_ROWS) {
+                    if (dist[nextrow][nextcol] == dist[current.getRow()][current.getCol()] - 1) {
+                        current = exploredMap.getCell(nextrow, nextcol);
+                        path.add(current);
+                        break;
+                    }
+                }
+            }
+        }
+
+        System.out.println("Shortest path from " + bot.getRobotPosRow() + " " + bot.getRobotPosCol() + " to " + c.getRow() + " " + c.getCol());
+        for (int i = path.size() - 1; i >= 0; i--) {
+            System.out.print(path.get(i).getRow() + " " + path.get(i).getCol() + " -> ");
+        }
+        System.out.println();
+
+        return path;
+
+    }
 }
