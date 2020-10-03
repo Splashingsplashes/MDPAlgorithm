@@ -680,12 +680,16 @@ public class Map extends JPanel {
     }
 
     public List<ObsSurface> getSurfaceCoverage(){
-        return surfaceCoverage;
+        if(surfaceCoverage!=null) {
+            System.out.println("coverage not null");
+            return surfaceCoverage;}
+        else return null;
     }
 
     public void setNotYetTakenList(List<ObsSurface> surfaces){
         notYetTakenList = surfaces;
     }
+
     public ObsSurface nearestObsSurface(Point loc, HashMap<String, ObsSurface> notYetTaken) {
         double dist = 1000, tempDist;
         Point tempPos;
@@ -802,6 +806,7 @@ public class Map extends JPanel {
 //            System.out.println(getCell(row, col).getIsObstacle());
 //            System.out.println(getCell(row, col).getIsExplored());
 //        }
+//        boolean OTW = checkObstacleOTW(bot.getRobotCurDir(),)
         boolean res = checkValidCell(row, col) && !getCell(row, col).getIsVirtualWall() && !getCell(row, col).getIsObstacle() && getCell(row,col).getIsExplored();
 //        System.out.println("res is"+res);
         return res;
@@ -826,6 +831,10 @@ public class Map extends JPanel {
                 break;
         }
         return n;
+    }
+
+    public void appendSurfaceCoverage(ObsSurface surface){
+        this.surfaceCoverage.add(surface);
     }
 
 }

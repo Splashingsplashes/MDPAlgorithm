@@ -790,8 +790,11 @@ public class ExplorationAlgo {
 
         // get all surfaces possilbe
         notYetTaken = getAllObsSurfaces();
-        for (String tempObsSurfaceStr : exploredMap.surfaceTaken.keySet()) {
-            notYetTaken.remove(tempObsSurfaceStr);
+        if(exploredMap.getSurfaceCoverage()!=null) {
+            for (ObsSurface tempObsSurfaceStr : exploredMap.getSurfaceCoverage()) {
+                System.out.println("entered getUntakenSurfaces for loop");
+                notYetTaken.remove(tempObsSurfaceStr.toString());
+            }
         }
         return notYetTaken;
     }
@@ -806,7 +809,8 @@ public class ExplorationAlgo {
         System.out.println("Nearest Valid Cell");
         if(nearestCell==null) System.out.println("No valid cell");
         else System.out.println(nearestCell.getPos());
-
+        System.out.println("size of not taken:");
+        System.out.println(notYetTaken.size());
         if (nearestCell != null) {
             // go to nearest cell
             ArrayList<Cell> path = findPath_image(nearestCell);
@@ -824,6 +828,15 @@ public class ExplorationAlgo {
                 bot.move(mov);
                 curDir = bot.getRobotCurDir();
             }
+            System.out.println("surface Taken");
+            List<ObsSurface> surfTaken = exploredMap.getSurfaceCoverage();
+            System.out.println(surfTaken);
+            if (surfTaken!=null)
+            {
+                removeFromNotYetTaken(nearestObstacle);
+                exploredMap.appendSurfaceCoverage(nearestObstacle);
+//                System.out.println("ever entered this loop?");
+            }
             //todo, send command to take image
             //updateNotYetTaken(nearestObstacle);
 
@@ -831,25 +844,36 @@ public class ExplorationAlgo {
         else{
             System.out.println("Unaccessible surface:");
             System.out.println(nearestObstacle.getPos());
+            removeFromNotYetTaken(nearestObstacle);
+            exploredMap.appendSurfaceCoverage(nearestObstacle);
         }
 
+
         System.out.println("size of not taken:");
-        System.out.println(notYetTaken.size());
-        removeFromNotYetTaken(nearestObstacle);
         System.out.println(notYetTaken.size());
         System.out.println("Surface removed:");
         System.out.println(nearestObstacle.toString());
     }
 
     private void removeFromNotYetTaken(ObsSurface obsSurface) {
+        System.out.println("Testting removeFromNotYetTaken");
+        System.out.println(notYetTaken);
+        System.out.println(obsSurface.toString());
+        System.out.println(notYetTaken.containsKey(obsSurface.toString()));
         notYetTaken.remove(obsSurface.toString());
 
     }
 
-    private void updateNotYetTaken(ArrayList<ObsSurface> surfTaken) {
+    private void updateNotYetTaken(List<ObsSurface> surfTaken) {
         for (ObsSurface obsSurface : surfTaken) {
+            System.out.println("Testting updateNotYetTaken");
+            System.out.println(notYetTaken);
+            System.out.println(obsSurface.toString());
+            System.out.println(notYetTaken.containsKey(obsSurface.toString()));
             if (notYetTaken.containsKey(obsSurface.toString())) {
                 notYetTaken.remove(obsSurface.toString());
+                System.out.println(notYetTaken);
+                System.out.println(obsSurface.toString());
             }
         }
     }
@@ -905,13 +929,7 @@ public class ExplorationAlgo {
                 notYetTakenList.add(notYetTaken.get(key));
             }
             exploredMap.setNotYetTakenList(notYetTakenList);
-//            System.out.println("check not yet taken likst");
-//            System.out.println(notYetTakenList);
             exploredMap.repaint();
-//            if (!candidate && exploredMap.getCell(nearestCell.getRow(), nearestCell.getCol()).getIsExplored()) {
-//                break;
-//            }
-
         }
         System.out.println("finished one surface");
     }
