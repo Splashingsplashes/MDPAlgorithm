@@ -321,21 +321,21 @@ public class Map extends JPanel {
 //                            if (flag.contains(spreadth))
 //                                continue;
 //                            if (rightFlag.isEmpty()||(spreadth>   Collections.max(rightFlag))){
-                                if (((r+spreadth < 20 ) && (c-depth >= 0)&& (grid[r + spreadth][c - depth].getIsObstacle())&&(!grid[r+spreadth][c-depth+1].getIsObstacle()))){
-                                        if(!checkObstacleOTW(d,r,c,r+spreadth,c-depth)) {
-                                        res = Arrays.asList(x_offset + (c-depth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r+spreadth)) * size, x_offset + (c - depth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r+spreadth) - 1) * size);
+                            if (((r+spreadth < 20 ) && (c-depth >= 0)&& (grid[r + spreadth][c - depth].getIsObstacle())&&(!grid[r+spreadth][c-depth+1].getIsObstacle()))){
+                                if(!checkObstacleOTW(d,r,c,r+spreadth,c-depth)) {
+                                    res = Arrays.asList(x_offset + (c-depth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r+spreadth)) * size, x_offset + (c - depth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r+spreadth) - 1) * size);
 
-                                        flag.add(spreadth);
-                                        rightFlag.add(spreadth);
-                                        imageCoverage.add(res);
+                                    flag.add(spreadth);
+                                    rightFlag.add(spreadth);
+                                    imageCoverage.add(res);
 
-                                        surface = new ObsSurface(r+spreadth,c-depth,Direction.RIGHT);
-                                        surfaceTaken.put(surface.toString(), surface);
-                                        surfaceCoverage.add(surface);
+                                    surface = new ObsSurface(r+spreadth,c-depth,Direction.RIGHT);
+                                    surfaceTaken.put(surface.toString(), surface);
+                                    surfaceCoverage.add(surface);
                                 }
                             }
-                                if (((r - spreadth >= 0) && (c - depth >= 0) && (grid[r - spreadth][c - depth].getIsObstacle()) && (!grid[r - spreadth][c - depth + 1].getIsObstacle()))) {
-                                    if(!checkObstacleOTW(d,r,c,r-spreadth,c-depth)) {
+                            if (((r - spreadth >= 0) && (c - depth >= 0) && (grid[r - spreadth][c - depth].getIsObstacle()) && (!grid[r - spreadth][c - depth + 1].getIsObstacle()))) {
+                                if(!checkObstacleOTW(d,r,c,r-spreadth,c-depth)) {
                                     res = Arrays.asList(x_offset + (c - depth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r - spreadth)) * size, x_offset + (c - depth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r - spreadth) - 1) * size);
                                     flag.add(spreadth);
                                     leftFlag.add(spreadth);
@@ -369,8 +369,8 @@ public class Map extends JPanel {
 //                                    imageCoverage.add(res);
 //                                }
 //                            if (rightFlag.isEmpty()||(spreadth> Collections.max(rightFlag))){
-                                if (((c+spreadth < 15 )&& (r+depth < 20)&&(grid[r+depth][c+spreadth].getIsObstacle())&&(!grid[r+depth-1][c+spreadth].getIsObstacle()))){
-                                    if(!checkObstacleOTW(d,r,c,r+depth,c+spreadth)) {
+                            if (((c+spreadth < 15 )&& (r+depth < 20)&&(grid[r+depth][c+spreadth].getIsObstacle())&&(!grid[r+depth-1][c+spreadth].getIsObstacle()))){
+                                if(!checkObstacleOTW(d,r,c,r+depth,c+spreadth)) {
                                     res = Arrays.asList(x_offset + (c + spreadth) * size, y_offset + (MapConstants.MAP_ROWS - (r + depth)) * size, x_offset + (c + spreadth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r + depth)) * size);
                                     flag.add(spreadth);
                                     rightFlag.add(spreadth);
@@ -381,8 +381,8 @@ public class Map extends JPanel {
                                 }
                             }
 //                            if (leftFlag.isEmpty()||(spreadth>  Collections.max(leftFlag))) {
-                                if (((c-spreadth >= 0 )&& (r+depth < 20)&&(grid[r+depth][c-spreadth].getIsObstacle()) &&(!grid[r+depth-1][c-spreadth].getIsObstacle()))) {
-                                    if(!checkObstacleOTW(d,r,c,r+depth,c-spreadth)) {
+                            if (((c-spreadth >= 0 )&& (r+depth < 20)&&(grid[r+depth][c-spreadth].getIsObstacle()) &&(!grid[r+depth-1][c-spreadth].getIsObstacle()))) {
+                                if(!checkObstacleOTW(d,r,c,r+depth,c-spreadth)) {
                                     res = Arrays.asList(x_offset + (c - spreadth) * size, y_offset + (MapConstants.MAP_ROWS - (r + depth)) * size, x_offset + (c - spreadth) * size + size, y_offset + (MapConstants.MAP_ROWS - (r + depth)) * size);
                                     flag.add(spreadth);
                                     leftFlag.add(spreadth);
@@ -404,17 +404,17 @@ public class Map extends JPanel {
 //                                continue;
 //                            if (((r + spreadth < 20) && (c + depth < 15) && (grid[r + spreadth][c + depth].getIsObstacle()) && (!grid[r + spreadth][c + depth -1].getIsObstacle()) ) && (rightFlag.isEmpty()||(spreadth> depth + Collections.max(rightFlag)))) {
 //                            if (rightFlag.isEmpty()||(spreadth> Collections.max(rightFlag))){
-                                if (((r + spreadth < 20) && (c + depth < 15)  && (grid[r + spreadth][c + depth].getIsObstacle()) && (!grid[r + spreadth][c + depth -1].getIsObstacle()))) {
-                                    if(!checkObstacleOTW(d,r,c,r+spreadth,c+depth)) {
-                                        res = Arrays.asList(x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - (r + spreadth)) * size, x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - (r + spreadth) - 1) * size);
+                            if (((r + spreadth < 20) && (c + depth < 15)  && (grid[r + spreadth][c + depth].getIsObstacle()) && (!grid[r + spreadth][c + depth -1].getIsObstacle()))) {
+                                if(!checkObstacleOTW(d,r,c,r+spreadth,c+depth)) {
+                                    res = Arrays.asList(x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - (r + spreadth)) * size, x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - (r + spreadth) - 1) * size);
 
-                                        flag.add(spreadth);
-                                        rightFlag.add(spreadth);
-                                        imageCoverage.add(res);
+                                    flag.add(spreadth);
+                                    rightFlag.add(spreadth);
+                                    imageCoverage.add(res);
 
-                                        surface = new ObsSurface(r+spreadth,c + depth,Direction.LEFT);
-                                        surfaceTaken.put(surface.toString(), surface);
-                                        surfaceCoverage.add(surface);
+                                    surface = new ObsSurface(r+spreadth,c + depth,Direction.LEFT);
+                                    surfaceTaken.put(surface.toString(), surface);
+                                    surfaceCoverage.add(surface);
                                 }
                             }
 //                            if (((r - spreadth >= 0) && (c + depth < 15) && (grid[r - spreadth][c + depth].getIsObstacle()) && (!grid[r - spreadth][c + depth -1].getIsObstacle()) ) && (leftFlag.isEmpty()||(spreadth> depth + Collections.max(rightFlag)))) {
@@ -425,16 +425,16 @@ public class Map extends JPanel {
 //                                imageCoverage.add(res);
 //                            }
 //                            if (leftFlag.isEmpty()||(spreadth>  Collections.max(leftFlag))) {
-                                if (((r - spreadth >= 0) && (c + depth < 15) && (grid[r - spreadth][c + depth].getIsObstacle()) && (!grid[r - spreadth][c + depth -1].getIsObstacle()))) {
-                                    if(!checkObstacleOTW(d,r,c,r-spreadth,c+depth)) {
-                                        res = Arrays.asList(x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - ((r - spreadth))) * size, x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - (r - spreadth) - 1) * size);
-                                        flag.add(spreadth);
-                                        leftFlag.add(spreadth);
-                                        imageCoverage.add(res);
+                            if (((r - spreadth >= 0) && (c + depth < 15) && (grid[r - spreadth][c + depth].getIsObstacle()) && (!grid[r - spreadth][c + depth -1].getIsObstacle()))) {
+                                if(!checkObstacleOTW(d,r,c,r-spreadth,c+depth)) {
+                                    res = Arrays.asList(x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - ((r - spreadth))) * size, x_offset + (c + depth) * size, y_offset + (MapConstants.MAP_ROWS - (r - spreadth) - 1) * size);
+                                    flag.add(spreadth);
+                                    leftFlag.add(spreadth);
+                                    imageCoverage.add(res);
 
-                                        surface = new ObsSurface(r-spreadth,c + depth,Direction.LEFT);
-                                        surfaceTaken.put(surface.toString(), surface);
-                                        surfaceCoverage.add(surface);
+                                    surface = new ObsSurface(r-spreadth,c + depth,Direction.LEFT);
+                                    surfaceTaken.put(surface.toString(), surface);
+                                    surfaceCoverage.add(surface);
                                 }
                             }
                         }
@@ -448,29 +448,29 @@ public class Map extends JPanel {
 //                            if (flag.contains(spreadth))
 //                                continue;
 //                            if (rightFlag.isEmpty()||(spreadth> Collections.max(rightFlag))){
-                                if (((c+spreadth < 15 )&& (r-depth >= 0) &&(grid[r-depth][c+spreadth].getIsObstacle()) && (!grid[r-depth+1][c+spreadth].getIsObstacle()))){
-                                    if(!checkObstacleOTW(d,r,c,r-depth,c+spreadth)) {
-                                        res = Arrays.asList(x_offset+(c+spreadth)*size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size,x_offset+(c+spreadth)*size+size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size);
-                                        imageCoverage.add(res);
-                                        rightFlag.add(spreadth);
-                                        flag.add(spreadth);
+                            if (((c+spreadth < 15 )&& (r-depth >= 0) &&(grid[r-depth][c+spreadth].getIsObstacle()) && (!grid[r-depth+1][c+spreadth].getIsObstacle()))){
+                                if(!checkObstacleOTW(d,r,c,r-depth,c+spreadth)) {
+                                    res = Arrays.asList(x_offset+(c+spreadth)*size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size,x_offset+(c+spreadth)*size+size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size);
+                                    imageCoverage.add(res);
+                                    rightFlag.add(spreadth);
+                                    flag.add(spreadth);
 
-                                        surface = new ObsSurface(r-depth,c + spreadth,Direction.UP);
-                                        surfaceTaken.put(surface.toString(), surface);
-                                        surfaceCoverage.add(surface);
+                                    surface = new ObsSurface(r-depth,c + spreadth,Direction.UP);
+                                    surfaceTaken.put(surface.toString(), surface);
+                                    surfaceCoverage.add(surface);
                                 }
                             }
 //                            if (leftFlag.isEmpty()||(spreadth> Collections.max(leftFlag))){
-                                if (((c-spreadth >= 0 )&& (r-depth >= 0)&&(grid[r-depth][c-spreadth].getIsObstacle()) && (!grid[r-depth+1][c-spreadth].getIsObstacle()))){
-                                    if(!checkObstacleOTW(d,r,c,r-depth,c-spreadth)) {
-                                        res = Arrays.asList(x_offset+(c-spreadth)*size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size,x_offset+(c-spreadth)*size+size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size);
-                                        imageCoverage.add(res);
-                                        leftFlag.add(spreadth);
-                                        flag.add(spreadth);
+                            if (((c-spreadth >= 0 )&& (r-depth >= 0)&&(grid[r-depth][c-spreadth].getIsObstacle()) && (!grid[r-depth+1][c-spreadth].getIsObstacle()))){
+                                if(!checkObstacleOTW(d,r,c,r-depth,c-spreadth)) {
+                                    res = Arrays.asList(x_offset+(c-spreadth)*size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size,x_offset+(c-spreadth)*size+size,y_offset+(MapConstants.MAP_ROWS-(r-depth)-1)*size);
+                                    imageCoverage.add(res);
+                                    leftFlag.add(spreadth);
+                                    flag.add(spreadth);
 
-                                        surface = new ObsSurface(r-depth,c - spreadth,Direction.UP);
-                                        surfaceTaken.put(surface.toString(), surface);
-                                        surfaceCoverage.add(surface);
+                                    surface = new ObsSurface(r-depth,c - spreadth,Direction.UP);
+                                    surfaceTaken.put(surface.toString(), surface);
+                                    surfaceCoverage.add(surface);
                                 }
                             }
                         }
@@ -605,47 +605,47 @@ public class Map extends JPanel {
 //            System.out.println(notYetTakenList);
 
 
-        }
-        public void paintSurface(List<ObsSurface>coverage,Graphics g){
+    }
+    public void paintSurface(List<ObsSurface>coverage,Graphics g){
 
-            List<Integer> res = new ArrayList<Integer>();
+        List<Integer> res = new ArrayList<Integer>();
 
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(Color.cyan);
-            g2.setStroke(new BasicStroke(3));
-            int x_offset = GraphicsConstants.MAP_X_OFFSET;
-            int y_offset = GraphicsConstants.MAP_Y_OFFSET;
-            int size = GraphicsConstants.CELL_SIZE;
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(Color.cyan);
+        g2.setStroke(new BasicStroke(3));
+        int x_offset = GraphicsConstants.MAP_X_OFFSET;
+        int y_offset = GraphicsConstants.MAP_Y_OFFSET;
+        int size = GraphicsConstants.CELL_SIZE;
 
-            for (ObsSurface surface : coverage){
-                switch(surface.getSurface()){
-                    case UP:
-                    {
-                        res = Arrays.asList(x_offset+ surface.getCol()*size,y_offset+(MapConstants.MAP_ROWS-surface.getRow()-1)*size,x_offset+ surface.getCol()*size+size,y_offset+(MapConstants.MAP_ROWS-surface.getRow()-1)*size);
-                        g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
-                        break;
-                    }
-                    case DOWN:
-                    {
-                        res = Arrays.asList(x_offset + surface.getCol() * size, y_offset + (MapConstants.MAP_ROWS - surface.getRow()) * size, x_offset +  surface.getCol() * size + size, y_offset + (MapConstants.MAP_ROWS - surface.getRow()) * size);
-                        g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
-                        break;
-                    }
-                    case LEFT:
-                    {
-                        res = Arrays.asList(x_offset + surface.getCol() * size, y_offset + (MapConstants.MAP_ROWS - (surface.getRow())) * size, x_offset + surface.getCol() * size, y_offset + (MapConstants.MAP_ROWS - surface.getRow() - 1) * size);
-                        g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
-                        break;
-                    }
-                    case RIGHT:
-                    {
-                        res = Arrays.asList(x_offset + surface.getCol() * size + size, y_offset + (MapConstants.MAP_ROWS - surface.getRow()) * size, x_offset + surface.getCol() * size + size, y_offset + (MapConstants.MAP_ROWS - surface.getRow() - 1) * size);
-                        g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
-                        break;
-                    }
+        for (ObsSurface surface : coverage){
+            switch(surface.getSurface()){
+                case UP:
+                {
+                    res = Arrays.asList(x_offset+ surface.getCol()*size,y_offset+(MapConstants.MAP_ROWS-surface.getRow()-1)*size,x_offset+ surface.getCol()*size+size,y_offset+(MapConstants.MAP_ROWS-surface.getRow()-1)*size);
+                    g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
+                    break;
+                }
+                case DOWN:
+                {
+                    res = Arrays.asList(x_offset + surface.getCol() * size, y_offset + (MapConstants.MAP_ROWS - surface.getRow()) * size, x_offset +  surface.getCol() * size + size, y_offset + (MapConstants.MAP_ROWS - surface.getRow()) * size);
+                    g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
+                    break;
+                }
+                case LEFT:
+                {
+                    res = Arrays.asList(x_offset + surface.getCol() * size, y_offset + (MapConstants.MAP_ROWS - (surface.getRow())) * size, x_offset + surface.getCol() * size, y_offset + (MapConstants.MAP_ROWS - surface.getRow() - 1) * size);
+                    g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
+                    break;
+                }
+                case RIGHT:
+                {
+                    res = Arrays.asList(x_offset + surface.getCol() * size + size, y_offset + (MapConstants.MAP_ROWS - surface.getRow()) * size, x_offset + surface.getCol() * size + size, y_offset + (MapConstants.MAP_ROWS - surface.getRow() - 1) * size);
+                    g2.drawLine(res.get(0),res.get(1),res.get(2),res.get(3));
+                    break;
                 }
             }
         }
+    }
 
     private class _DisplayCell {
         public final int cellX;
@@ -682,7 +682,9 @@ public class Map extends JPanel {
     public List<ObsSurface> getSurfaceCoverage(){
         if(surfaceCoverage!=null) {
             System.out.println("coverage not null");
-            return surfaceCoverage;}
+            List<ObsSurface> res = new ArrayList<ObsSurface>(surfaceCoverage);
+            return res;
+        }
         else return null;
     }
 

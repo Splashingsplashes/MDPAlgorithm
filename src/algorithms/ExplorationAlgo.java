@@ -199,7 +199,7 @@ public class ExplorationAlgo {
         }
 
 
-        }
+    }
 
     /**
      * Determines the next move for the robot and executes it accordingly.
@@ -688,10 +688,10 @@ public class ExplorationAlgo {
                 if(exploredMap.getIsObstacleOrWall(row - 2, col - 1) && exploredMap.getIsObstacleOrWall(row - 2, col + 1))
                     return MOVEMENT.FRONT_CALIBRATE;
             case WEST:
-                 if(exploredMap.getIsObstacleOrWall(row - 2, col + 1) && exploredMap.getIsObstacleOrWall(row - 2, col - 1))
-                     return MOVEMENT.LEFT_CALIBRATE;
-                 if(exploredMap.getIsObstacleOrWall(row + 1, col - 2) && exploredMap.getIsObstacleOrWall(row - 1, col - 2))
-                     return MOVEMENT.FRONT_CALIBRATE;
+                if(exploredMap.getIsObstacleOrWall(row - 2, col + 1) && exploredMap.getIsObstacleOrWall(row - 2, col - 1))
+                    return MOVEMENT.LEFT_CALIBRATE;
+                if(exploredMap.getIsObstacleOrWall(row + 1, col - 2) && exploredMap.getIsObstacleOrWall(row - 1, col - 2))
+                    return MOVEMENT.FRONT_CALIBRATE;
         }
 
         return null;
@@ -786,17 +786,23 @@ public class ExplorationAlgo {
     }
 
     private HashMap<String, ObsSurface> getUntakenSurfaces() {
-        HashMap<String, ObsSurface> notYetTaken;
+        this.notYetTaken = getAllObsSurfaces();
+        List<ObsSurface> coverage = exploredMap.getSurfaceCoverage();
 
-        // get all surfaces possilbe
-        notYetTaken = getAllObsSurfaces();
-        if(exploredMap.getSurfaceCoverage()!=null) {
-            for (ObsSurface tempObsSurfaceStr : exploredMap.getSurfaceCoverage()) {
-                System.out.println("entered getUntakenSurfaces for loop");
-                notYetTaken.remove(tempObsSurfaceStr.toString());
+        if(coverage!=null) {
+            System.out.println(coverage.size());
+            int count = 0;
+
+            for (ObsSurface tempObsSurfaceStr : coverage) {
+                count=+1;
+                System.out.println(count);
+                System.out.println("entered getUntakenSurfaces");
+                removeFromNotYetTaken(tempObsSurfaceStr);
+                System.out.println(coverage.size());
             }
+            System.out.println("finished getUntakenSurfaces");
         }
-        return notYetTaken;
+        return this.notYetTaken;
     }
 
     private void imageLoop(){
@@ -856,12 +862,14 @@ public class ExplorationAlgo {
     }
 
     private void removeFromNotYetTaken(ObsSurface obsSurface) {
-        System.out.println("Testting removeFromNotYetTaken");
+        System.out.println("Testing removeFromNotYetTaken");
         System.out.println(notYetTaken);
         System.out.println(obsSurface.toString());
         System.out.println(notYetTaken.containsKey(obsSurface.toString()));
+
         notYetTaken.remove(obsSurface.toString());
 
+        System.out.println(notYetTaken);
     }
 
     private void updateNotYetTaken(List<ObsSurface> surfTaken) {
@@ -924,12 +932,16 @@ public class ExplorationAlgo {
             if (notYetTaken.size() == 0) {
                 return;
             }
+            System.out.println("1");
             List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
             for (String key : notYetTaken.keySet()) {
+                System.out.println("2");
                 notYetTakenList.add(notYetTaken.get(key));
             }
+            System.out.println("3");
             exploredMap.setNotYetTakenList(notYetTakenList);
             exploredMap.repaint();
+            System.out.println("4");
         }
         System.out.println("finished one surface");
     }
