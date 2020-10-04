@@ -32,7 +32,7 @@ public class Map extends JPanel {
     private static List<ObsSurface> surfaceCoverage = new ArrayList<ObsSurface>();
     public static HashMap<String, ObsSurface> surfaceTaken = new HashMap<String, ObsSurface>();
     private static List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
-
+    private static List<ObsSurface> notAccessibleSurface = new ArrayList<ObsSurface>();
     /**
      * Initialises a Map object with a grid of Cell objects.
      */
@@ -599,19 +599,22 @@ public class Map extends JPanel {
 //
 //        paintSurface(surfaceCoverage,g);
         if(notYetTakenList!=null && notYetTakenList.size()!=0){
-            paintSurface(notYetTakenList,g);
+            paintSurface(notYetTakenList,g,Color.cyan);
+        }
+        if(notAccessibleSurface!=null && notAccessibleSurface.size()!=0){
+            paintSurface(notAccessibleSurface,g,Color.RED);
         }
 //            System.out.println("painted surfaces");
 //            System.out.println(notYetTakenList);
 
 
     }
-    public void paintSurface(List<ObsSurface>coverage,Graphics g){
+    public void paintSurface(List<ObsSurface>coverage,Graphics g, Color color){
 
         List<Integer> res = new ArrayList<Integer>();
 
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(Color.cyan);
+        g2.setColor(color);
         g2.setStroke(new BasicStroke(3));
         int x_offset = GraphicsConstants.MAP_X_OFFSET;
         int y_offset = GraphicsConstants.MAP_Y_OFFSET;
@@ -690,6 +693,9 @@ public class Map extends JPanel {
 
     public void setNotYetTakenList(List<ObsSurface> surfaces){
         notYetTakenList = surfaces;
+    }
+    public void addNotAccessibleSurface(ObsSurface surfaces){
+        notAccessibleSurface.add(surfaces);
     }
 
     public ObsSurface nearestObsSurface(Point loc, HashMap<String, ObsSurface> notYetTaken) {

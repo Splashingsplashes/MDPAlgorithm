@@ -852,6 +852,8 @@ public class ExplorationAlgo {
             System.out.println(nearestObstacle.getPos());
             removeFromNotYetTaken(nearestObstacle);
             exploredMap.appendSurfaceCoverage(nearestObstacle);
+
+            exploredMap.addNotAccessibleSurface(nearestObstacle);
         }
 
 
@@ -932,16 +934,12 @@ public class ExplorationAlgo {
             if (notYetTaken.size() == 0) {
                 return;
             }
-            System.out.println("1");
             List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
             for (String key : notYetTaken.keySet()) {
-                System.out.println("2");
                 notYetTakenList.add(notYetTaken.get(key));
             }
-            System.out.println("3");
             exploredMap.setNotYetTakenList(notYetTakenList);
             exploredMap.repaint();
-            System.out.println("4");
         }
         System.out.println("finished one surface");
     }
