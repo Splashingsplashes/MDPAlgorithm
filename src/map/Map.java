@@ -33,6 +33,9 @@ public class Map extends JPanel {
     public static HashMap<String, ObsSurface> surfaceTaken = new HashMap<String, ObsSurface>();
     private static List<ObsSurface> notYetTakenList = new ArrayList<ObsSurface>();
     private static List<ObsSurface> notAccessibleSurface = new ArrayList<ObsSurface>();
+    private boolean makeUpImageRun = false;
+    private boolean arriveAtImagePos = false;
+
     /**
      * Initialises a Map object with a grid of Cell objects.
      */
@@ -295,11 +298,11 @@ public class Map extends JPanel {
 
     public boolean computeImageCoverage(Graphics g,RobotConstants.DIRECTION d,int r,int c){
         boolean res_flag = false;
-        if(takeImage) {
+        if((takeImage&&!makeUpImageRun) || (makeUpImageRun&&arriveAtImagePos)) {
             res_flag = true;
             takeImage = false;
             stepCount = 4;
-
+            arriveAtImagePos = false;
             List<Integer> res = new ArrayList<Integer>();
 
             int x_offset = 120;
@@ -516,9 +519,9 @@ public class Map extends JPanel {
                     else if (grid[mapRow][mapCol].getIsObstacle()) {
                         cellColor = GraphicsConstants.C_OBSTACLE;
                     }
-                    else if (grid[mapRow][mapCol].getIsVirtualWall()) {
-                        cellColor = Color.orange;
-                    }
+//                    else if (grid[mapRow][mapCol].getIsVirtualWall()) {
+//                        cellColor = Color.orange;
+//                    }
                     else
                         cellColor = GraphicsConstants.C_FREE;
                 }
@@ -648,6 +651,7 @@ public class Map extends JPanel {
                 }
             }
         }
+        surfaceTaken.clear();
     }
 
     private class _DisplayCell {
@@ -685,7 +689,18 @@ public class Map extends JPanel {
     public List<ObsSurface> getSurfaceCoverage(){
         if(surfaceCoverage!=null) {
             System.out.println("coverage not null");
-            List<ObsSurface> res = new ArrayList<ObsSurface>(surfaceCoverage);
+            List<ObsSurface> res = new ArrayList<ObsSurface>(new HashSet<>(surfaceCoverage));
+            return res;
+        }
+        else return null;
+    }
+    public List<ObsSurface> getSurfaceTaken(){
+        if(surfaceTaken!=null) {
+            System.out.println("current coverage not null");
+            List<ObsSurface> res = new ArrayList<ObsSurface>();
+            for(String surface:surfaceTaken.keySet()){
+                res.add(surfaceTaken.get(surface));
+            }
             return res;
         }
         else return null;
@@ -842,7 +857,14 @@ public class Map extends JPanel {
     }
 
     public void appendSurfaceCoverage(ObsSurface surface){
-        this.surfaceCoverage.add(surface);
+        surfaceCoverage.add(surface);
+    }
+
+    public void setMakeUpImageRun(boolean flag){
+        this.makeUpImageRun = flag;
+    }
+    public void setArriveAtImagePos(boolean flag){
+        this.arriveAtImagePos = flag;
     }
 
 }
